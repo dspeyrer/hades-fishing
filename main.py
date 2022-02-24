@@ -1,30 +1,34 @@
 from tkinter import *
-from PIL import ImageTk, Image, ImageGrab
 import numpy as np
-import cv2
 from mss import mss
-from PIL import Image
-from pynput import keyboard
+from pynput.keyboard import Key, Listener, Controller
 import time
+import sys
 
-keycontrol = keyboard.Controller()
+if sys.platform == 'win32':
+    platform = 'win'
+elif sys.platform == 'darwin':
+    platform = 'mac'
+else:
+    print("Unsupported platform")
+    exit(1)
 
+interact_key = Key.space
+fishing_key = 'k'
+
+keycontrol = Controller()
 sct = mss()
-
 root = Tk()
 
-# Set Title as Image Loader
-root.title("Image Loader")
+root.title("Hades autofish")
+root.geometry("200x500")
 
-# Set the resolution of window
-root.geometry("550x300")
-
-#root.wm_attributes("-transparent", True)
-# root.config(bg='systemTransparent')
-
-root.configure(bg='white')
-
-root.wm_attributes("-transparentcolor", "white")
+if (platform == 'mac'):
+    root.wm_attributes("-transparent", True)
+    root.config(bg='systemTransparent')
+elif platform == 'win':
+    root.configure(bg='white')
+    root.wm_attributes("-transparentcolor", "white")
 
 root.attributes('-topmost', True)
 
@@ -40,52 +44,48 @@ borderT.pack(expand=False, fill="x", side=TOP)
 borderB = Frame(root, height=5, bg="red")
 borderB.pack(expand=False, fill="x", side=BOTTOM)
 
-
-# Allow Window to be resizable
 root.resizable(width=True, height=True)
-
 
 reading = False
 
 
-def toggle_graphing(key):
+def read(key):
     global reading
-    if hasattr(key, "char") and key.char == 'k':
+    if hasattr(key, "char") and key == fishing_key:
         reading = True
-        keycontrol.press(keyboard.Key.shift)
-
-
-listener = keyboard.Listener(on_press=toggle_graphing)
-listener.start()
-
-while True:
-    if reading:
+        keycontrol.press(interact_key)
         borderB.config(bg="green")
         borderL.config(bg="green")
         borderR.config(bg="green")
         borderT.config(bg="green")
-        root.update_idletasks()
-        root.update()
         time.sleep(1)
+        keycontrol.release(interact_key)
         lastval = 255
         while reading:
-            sct_img = sct.grab({'top': root.winfo_y() + 29, 'left': root.winfo_x(
-            ) + 1, 'width': root.winfo_width() - 2, 'height': root.winfo_height() - 29})
-            arr = np.array(sct_img)
-            # cv2.imshow('screen', arr)
+            sct_img = sct.grab({
+                'top': root.winfo_y() + 29,
+                'left': root.winfo_x() + 1,
+                'width': root.winfo_width() - 2,
+                'height': root.winfo_height() - 29
+            })
 
+            arr = np.array(sct_img)
             sum = np.sum(arr) / arr.size
 
             if (sum > lastval + 10):
-                print("activated")
-                keycontrol.press(keyboard.Key.shift)
+                keycontrol.press(interact_key)
                 borderB.config(bg="red")
                 borderL.config(bg="red")
                 borderR.config(bg="red")
                 borderT.config(bg="red")
-                reading = False
+                time.sleep(0.5)
+                keycontrol.release(interact_key)
+                return
 
             lastval = sum
-    #
-    root.update_idletasks()
-    root.update()
+
+
+listener = Listener(on_press=read)
+listener.start()
+
+root.mainloop()

@@ -8,7 +8,7 @@
       "name": "Python: Current File",
       "type": "python",
       "request": "launch",
-      "program": "${cwd}/main.pyasd",
+      "program": "${cwd}/main.py",
       "console": "integratedTerminal"
     }
   ]
