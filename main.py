@@ -13,16 +13,19 @@ sct = mss()
 
 root = Tk()
 
-f = open("data.txt", "w")
-
 # Set Title as Image Loader
 root.title("Image Loader")
 
 # Set the resolution of window
 root.geometry("550x300")
 
-root.wm_attributes("-transparent", True)
-root.config(bg='systemTransparent')
+#root.wm_attributes("-transparent", True)
+# root.config(bg='systemTransparent')
+
+root.configure(bg='white')
+
+root.wm_attributes("-transparentcolor", "white")
+
 root.attributes('-topmost', True)
 
 borderL = Frame(root, width=5, bg="red")
