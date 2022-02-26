@@ -14,7 +14,7 @@ else:
     exit(1)
 
 # The keybind in Hades set under "interact" -- this is the keybind used for fishing
-interact_key = Key.space
+interact_key = Key.shift
 # The hotkey to start fishing once the window has been aligned
 fishing_key = 'k'
 
@@ -53,7 +53,7 @@ borderB.pack(expand=False, fill="x", side=BOTTOM)
 
 # Watches the screen at the boundaries of the window and triggers when the average pixel value jumps up
 def watch(key):
-    if hasattr(key, "char") and key == fishing_key:  # Check if the hotkey is pressed
+    if hasattr(key, "char") and key.char == fishing_key:  # Check if the hotkey is pressed
         keyboard.press(interact_key)  # Begin fishing
         borderB.config(bg="green")
         borderL.config(bg="green")
